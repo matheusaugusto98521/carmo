@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,6 +40,7 @@ public class ClientModel implements UserDetails{
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ClientRoles role;
 
     @Override
@@ -51,6 +54,8 @@ public class ClientModel implements UserDetails{
         this.role = role;
     }
 
+    public ClientModel(){}
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if(this.role == ClientRoles.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), 
@@ -61,22 +66,22 @@ public class ClientModel implements UserDetails{
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
     
 }

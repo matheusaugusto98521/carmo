@@ -1,4 +1,6 @@
-package com.example.carmo.clients;
+package com.example.carmo.dto;
+
+import com.example.carmo.clients.ClientModel;
 
 import lombok.Data;
 

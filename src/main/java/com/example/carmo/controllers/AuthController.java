@@ -12,13 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.carmo.clients.AuthenticationDTO;
 import com.example.carmo.clients.ClientModel;
-import com.example.carmo.clients.RegisterDTO;
+import com.example.carmo.dto.AuthenticationDTO;
+import com.example.carmo.dto.LoginResponseDTO;
+import com.example.carmo.dto.RegisterDTO;
+import com.example.carmo.infra.security.TokenService;
 import com.example.carmo.repository.IClientRepository;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("auth")
 public class AuthController {
 
     @Autowired
@@ -27,13 +29,18 @@ public class AuthController {
     @Autowired
     private IClientRepository repository;
 
+    @Autowired
+    TokenService tokenService;
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid AuthenticationDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        return ResponseEntity.ok().build();
+        var token = tokenService.generateToken((ClientModel) auth.getPrincipal());
+
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
     @PostMapping("/register")
