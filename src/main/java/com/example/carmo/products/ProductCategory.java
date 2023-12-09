@@ -1,5 +1,10 @@
 package com.example.carmo.products;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -7,33 +12,28 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.ToString;
 
 @Data
 @Entity
-@Table(name = "tb_products")
-@ToString(exclude = "category")
-public class ProductModel {
+@Table(name = "tb_productCategory")
+public class ProductCategory {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true, nullable = false)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 100)
+    @Column(unique = true, nullable = false)
     private String name;
 
-    @Column(length = 500)
-    private String description;
-
-    @Column(nullable = false)
-    private double price;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @OneToMany(mappedBy = "category")
     @JsonIgnore
-    private ProductCategory category;
-    
+    private List<ProductModel> products;
+
+    @CreationTimestamp
+    @JsonIgnore
+    private LocalDateTime createdCategory;
 }

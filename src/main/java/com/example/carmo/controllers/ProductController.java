@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.carmo.dto.ProductResponseDTO;
 import com.example.carmo.products.ProductModel;
-import com.example.carmo.products.ProductResponseDTO;
 import com.example.carmo.repository.IProductRepository;
+import com.example.carmo.services.ProductServices;
 
 @RestController
 @RequestMapping("/products")
@@ -25,6 +26,9 @@ public class ProductController {
 
     @Autowired
     private IProductRepository prodRepository;
+
+    @Autowired
+    ProductServices services;
 
     @PostMapping("/")
     public ResponseEntity<?> addProduct(@RequestBody ProductModel product) {
@@ -94,7 +98,16 @@ public class ProductController {
         catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ProductResponseDTO("Erro ao excluir produto!", null));
         }
-
-
     }
+
+    @PostMapping("/{productId}/assign-category/{categoryId}")
+    public ResponseEntity<?> assingCategory(@PathVariable Long productId, @PathVariable Long categoryId){
+
+        ProductModel product = services.assignCategory(productId, categoryId);
+
+        
+        return ResponseEntity.status(HttpStatus.OK).body(new ProductResponseDTO("Produto atribuído à categoria com sucesso", product));
+    }
+
+    
 }

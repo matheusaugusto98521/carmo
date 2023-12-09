@@ -1,4 +1,6 @@
-package com.example.carmo.products;
+package com.example.carmo.dto;
+
+import com.example.carmo.products.ProductModel;
 
 import lombok.Data;
 
