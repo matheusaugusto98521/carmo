@@ -15,8 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.carmo.dto.ProductDTO;
 import com.example.carmo.dto.ProductResponseDTO;
-import com.example.carmo.products.ProductModel;
+import com.example.carmo.product_models.AlcholicBeverage;
+import com.example.carmo.product_models.Food;
+import com.example.carmo.product_models.NonAlcholicBeverage;
+import com.example.carmo.product_models.Tobacco;
+import com.example.carmo.product_models.Various;
+import com.example.carmo.products.Product;
 import com.example.carmo.repository.IProductRepository;
 import com.example.carmo.services.ProductServices;
 
@@ -29,30 +35,71 @@ public class ProductController {
 
     @Autowired
     ProductServices services;
+    
+    @PostMapping("/{productType}")
+    public ResponseEntity<?> addProduct(@RequestBody ProductDTO dto, @PathVariable String productType) {
 
-    @PostMapping("/")
-    public ResponseEntity<?> addProduct(@RequestBody ProductModel product) {
-
-        if (product != null) {
-            if (product.getId() != null && prodRepository.existsById(product.getId())) {
+        if (dto != null) {
+            if (dto != null && dto.name() != null && prodRepository.existsByName(dto.name())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Esse produto já existe");
             }
         }
-        ProductModel addedProd = prodRepository.save(product);
 
-        if (addedProd != null) {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ProductResponseDTO("Produto criado com sucesso!", addedProd));
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ProductResponseDTO("Erro ao criar produto", null));
+        switch(productType.toLowerCase()){
+            case "alcoholic":
+                AlcholicBeverage alcholicBeverage = new AlcholicBeverage();
+                alcholicBeverage.setName(dto.name());
+                alcholicBeverage.setDescription(dto.description());
+                alcholicBeverage.setPrice(dto.price());
+                alcholicBeverage.setAlcPercent(dto.alcPercent());
+                alcholicBeverage.setOrigin(dto.origin());
+
+                var savedBev = prodRepository.save(alcholicBeverage);
+                
+                return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponseDTO("Produto criado com sucesso!", savedBev));
+            
+            case "non_alcoholic":
+                NonAlcholicBeverage nonAlcholicBeverage = new NonAlcholicBeverage();
+                NonAlcholicBeverage savedNon = prodRepository.save(nonAlcholicBeverage);
+                return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponseDTO("Produto criado com sucesso!", savedNon));
+                
+
+            case "tobacco":
+                Tobacco tobacco = new Tobacco();
+                tobacco.setName(dto.name());
+                tobacco.setDescription(dto.description());
+                tobacco.setPrice(dto.price());
+                tobacco.setTobaccoType(dto.tobaccoType());
+                tobacco.setHasFilter(dto.hasFilter());
+                Tobacco savedTo = prodRepository.save(tobacco);
+                return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponseDTO("Produto criado com sucesso!", savedTo));
+
+            case "food":
+                Food food = new Food();
+                var savedFood = prodRepository.save(food);
+                return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponseDTO("Produto criado com sucesso!", savedFood));
+
+            case "various":
+                Various various = new Various();
+                var savedVarious = prodRepository.save(various);
+                System.out.println("Tipo do objeto recebido: " + dto.getClass().getSimpleName());
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponseDTO("Produto criado com sucesso!", savedVarious));
+            
+            default:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tipo não encontrado");
         }
-
+        
     }
+        
+
+    
+
+    
 
     @GetMapping("/")
-    public ResponseEntity<List<ProductModel>> displayProducts() {
-        List<ProductModel> display = prodRepository.findAll();
+    public ResponseEntity<List<Product>> displayProducts() {
+        List<Product> display = prodRepository.findAll();
 
         if (display.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -62,18 +109,18 @@ public class ProductController {
     }
 
     @PutMapping("/{id}/")
-    public ResponseEntity<?> alterateProduct(@PathVariable Long id, @RequestBody ProductModel upProduct) {
+    public ResponseEntity<?> alterateProduct(@PathVariable Long id, @RequestBody Product upProduct) {
 
-        Optional<ProductModel> existingProductOptional = prodRepository.findById(id);
+        Optional<Product> existingProductOptional = prodRepository.findById(id);
 
         if (existingProductOptional.isPresent()) {
-            ProductModel existingProduct = existingProductOptional.get();
+            Product existingProduct = existingProductOptional.get();
 
             existingProduct.setName(upProduct.getName());
             existingProduct.setDescription(upProduct.getDescription());
             existingProduct.setPrice(upProduct.getPrice());
 
-            ProductModel updatedproduct = prodRepository.save(existingProduct);
+            Product updatedproduct = prodRepository.save(existingProduct);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ProductResponseDTO("Produto alterado com sucesso!", updatedproduct));
@@ -103,11 +150,11 @@ public class ProductController {
     @PostMapping("/{productId}/assign-category/{categoryId}")
     public ResponseEntity<?> assingCategory(@PathVariable Long productId, @PathVariable Long categoryId){
 
-        ProductModel product = services.assignCategory(productId, categoryId);
+        Product product = services.assignCategory(productId, categoryId);
 
         
         return ResponseEntity.status(HttpStatus.OK).body(new ProductResponseDTO("Produto atribuído à categoria com sucesso", product));
     }
 
-    
 }
+

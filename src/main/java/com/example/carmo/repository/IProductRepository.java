@@ -2,8 +2,8 @@ package com.example.carmo.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.carmo.products.ProductModel;
+import com.example.carmo.products.Product;
 
-public interface IProductRepository extends JpaRepository<ProductModel, Long>{
-    
+public interface IProductRepository extends JpaRepository<Product, Long>{
+    boolean existsByName(String name);
 }

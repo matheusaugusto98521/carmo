@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.carmo.products.Product;
 import com.example.carmo.products.ProductCategory;
-import com.example.carmo.products.ProductModel;
 import com.example.carmo.repository.ICategoryRepository;
 import com.example.carmo.services.ProductServices;
 
@@ -43,9 +43,9 @@ public class CategoryController {
     }
 
     @GetMapping("/{categoryID}/products")
-    public ResponseEntity<List<ProductModel>> getProductsByCategory(@PathVariable Long categoryID){
+    public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable Long categoryID){
         try{
-            List<ProductModel> products = services.getProductsByCategory(categoryID);
+            List<Product> products = services.getProductsByCategory(categoryID);
 
             return ResponseEntity.status(HttpStatus.OK).body(products);
         }catch(EntityNotFoundException e){

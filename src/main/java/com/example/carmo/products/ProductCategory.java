@@ -31,7 +31,7 @@ public class ProductCategory {
 
     @OneToMany(mappedBy = "category")
     @JsonIgnore
-    private List<ProductModel> products;
+    private List<Product> products;
 
     @CreationTimestamp
     @JsonIgnore

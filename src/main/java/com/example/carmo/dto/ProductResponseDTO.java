@@ -1,6 +1,6 @@
 package com.example.carmo.dto;
 
-import com.example.carmo.products.ProductModel;
+import com.example.carmo.products.Product;
 
 import lombok.Data;
 
@@ -8,9 +8,9 @@ import lombok.Data;
 public class ProductResponseDTO {
 
     private String message;
-    private ProductModel product;
+    private Product product;
 
-    public ProductResponseDTO(String message, ProductModel product){
+    public ProductResponseDTO(String message, Product product){
         this.message = message;
         this.product = product;
     }

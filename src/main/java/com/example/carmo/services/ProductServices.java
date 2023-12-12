@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.carmo.products.Product;
 import com.example.carmo.products.ProductCategory;
-import com.example.carmo.products.ProductModel;
 import com.example.carmo.repository.ICategoryRepository;
 import com.example.carmo.repository.IProductRepository;
 
@@ -22,13 +22,13 @@ public class ProductServices {
     @Autowired
     ICategoryRepository categoryRepository;
 
-    public ProductModel assignCategory(Long productId, Long categoryId){
+    public Product assignCategory(Long productId, Long categoryId){
 
         if(productId == null || categoryId == null){
             throw new IllegalArgumentException("O ID de categoria ou do produto específico não podem ser nulos");
         }
 
-        ProductModel product = repository.findById(productId).orElseThrow(
+        Product product = repository.findById(productId).orElseThrow(
             () -> new EntityNotFoundException("Produto não encontrado"));
 
 
@@ -44,7 +44,7 @@ public class ProductServices {
         return repository.save(product);
     }
 
-    public List<ProductModel> getProductsByCategory(Long categoryID){
+    public List<Product> getProductsByCategory(Long categoryID){
         Optional<ProductCategory> categoryOptional = categoryRepository.findById(categoryID);
 
         if(categoryOptional.isPresent()){
