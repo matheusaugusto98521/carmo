@@ -9,6 +9,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.example.carmo.products.ShoppingCar;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,13 +19,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "tb_clients")
-public class ClientModel implements UserDetails{
+public class ClientModel implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -35,7 +39,6 @@ public class ClientModel implements UserDetails{
     @Column(nullable = false)
     private String password;
 
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -43,24 +46,30 @@ public class ClientModel implements UserDetails{
     @Enumerated(EnumType.STRING)
     private ClientRoles role;
 
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+    private ShoppingCar shoppingCar;
+
     @Override
-    public String getUsername(){
+    public String getUsername() {
         return username;
     }
 
-    public ClientModel(String username, String password, ClientRoles role){
+    public ClientModel(String username, String password, ClientRoles role) {
         this.username = username;
         this.password = password;
         this.role = role;
     }
 
-    public ClientModel(){}
+    public ClientModel() {
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.role == ClientRoles.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), 
-        new SimpleGrantedAuthority("ROLE_USER"));
-        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        if (this.role == ClientRoles.ADMIN)
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_USER"));
+        else
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
 
     }
 
@@ -83,5 +92,5 @@ public class ClientModel implements UserDetails{
     public boolean isEnabled() {
         return true;
     }
-    
+
 }
