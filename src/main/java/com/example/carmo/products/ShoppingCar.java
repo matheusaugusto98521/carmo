@@ -43,8 +43,10 @@ public class ShoppingCar {
             CarItem car = new CarItem();
             car.setProduct(product);
             car.setQuantity(quantity);
+            car.setShoppingCar(this);
             carItems.add(car);
         }
+        
     }
 
 

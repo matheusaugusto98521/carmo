@@ -22,5 +22,9 @@ public class CarItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @ManyToOne
+    @JoinColumn(name = "shoppingCar")
+    private ShoppingCar shoppingCar;
+
     private int quantity;
 }
