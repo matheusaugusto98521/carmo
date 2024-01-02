@@ -3,6 +3,7 @@ package com.example.carmo.clients;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.carmo.products.ShoppingCar;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -46,12 +48,18 @@ public class ClientModel implements UserDetails {
     @Enumerated(EnumType.STRING)
     private ClientRoles role;
 
-    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private ShoppingCar shoppingCar;
 
     @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(id, username, password, role);
     }
 
     public ClientModel(String username, String password, ClientRoles role) {
@@ -62,6 +70,8 @@ public class ClientModel implements UserDetails {
 
     public ClientModel() {
     }
+
+    
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

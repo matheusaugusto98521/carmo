@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/category")
+@CrossOrigin("*")
 public class CategoryController {
 
     @Autowired
@@ -51,6 +53,12 @@ public class CategoryController {
         }catch(EntityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<ProductCategory>> displayCategories(){
+        List<ProductCategory> categories = repository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(categories);
     }
     
 }

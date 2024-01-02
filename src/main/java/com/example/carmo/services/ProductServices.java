@@ -53,7 +53,9 @@ public class ProductServices {
         }else{
             throw new EntityNotFoundException("Categoria não encontrada com o ID:" + categoryID);
         }
+    }
 
-        
+    public List<Product> searchProduct(String query){
+        return repository.findByNameContaining(query);
     }
 }

@@ -3,6 +3,7 @@ package com.example.carmo.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.carmo.clients.ClientModel;
@@ -10,11 +11,15 @@ import com.example.carmo.dto.CarItemDTO;
 import com.example.carmo.products.CarItem;
 import com.example.carmo.products.Product;
 import com.example.carmo.products.ShoppingCar;
+import com.example.carmo.repository.IShoppingCarRepository;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class ShoppingCarService {
+
+    @Autowired
+    private IShoppingCarRepository repository;
 
     @Transactional
     public void addToCar(Product product, int quantity, ClientModel client) {
@@ -63,5 +68,16 @@ public class ShoppingCarService {
         }
 
         return total;
+    }
+
+    public void clearItems(ClientModel client){
+        ShoppingCar shoppingCar = getShoppingCar(client);
+
+        if(shoppingCar != null){
+            shoppingCar.getCarItems().clear();
+
+            repository.save(shoppingCar);
+
+        }
     }
 }

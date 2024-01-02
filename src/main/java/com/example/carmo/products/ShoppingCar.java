@@ -2,8 +2,10 @@ package com.example.carmo.products;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.example.carmo.clients.ClientModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -30,6 +32,7 @@ public class ShoppingCar {
 
     @OneToOne
     @JoinColumn(name = "client_id")
+    @JsonIgnore
     private ClientModel client;
 
 
@@ -59,5 +62,10 @@ public class ShoppingCar {
         }
         
         return null;
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(id, carItems, client);
     }
 }

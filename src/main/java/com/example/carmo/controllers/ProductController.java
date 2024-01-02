@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +40,7 @@ import com.example.carmo.services.ShoppingCarService;
 
 @RestController
 @RequestMapping("/products")
+@CrossOrigin("*")
 public class ProductController {
 
     @Autowired
@@ -83,6 +86,9 @@ public class ProductController {
 
             case "non_alcoholic":
                 NonAlcholicBeverage nonAlcholicBeverage = new NonAlcholicBeverage();
+                nonAlcholicBeverage.setName(dto.name());
+                nonAlcholicBeverage.setDescription(dto.description());
+                nonAlcholicBeverage.setPrice(dto.price());
                 NonAlcholicBeverage savedNon = prodRepository.save(nonAlcholicBeverage);
                 return ResponseEntity.status(HttpStatus.CREATED)
                         .body(new ProductResponseDTO("Produto criado com sucesso!", savedNon));
@@ -100,12 +106,18 @@ public class ProductController {
 
             case "food":
                 Food food = new Food();
+                food.setName(dto.name());
+                food.setDescription(dto.description());
+                food.setPrice(dto.price());
                 var savedFood = prodRepository.save(food);
                 return ResponseEntity.status(HttpStatus.CREATED)
                         .body(new ProductResponseDTO("Produto criado com sucesso!", savedFood));
 
             case "various":
                 Various various = new Various();
+                various.setName(dto.name());
+                various.setDescription(dto.description());
+                various.setPrice(dto.price());
                 var savedVarious = prodRepository.save(various);
                 System.out.println("Tipo do objeto recebido: " + dto.getClass().getSimpleName());
 
@@ -128,6 +140,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(display);
 
     }
+
 
     @PutMapping("/{id}/")
     public ResponseEntity<?> alterateProduct(@PathVariable Long id, @RequestBody Product upProduct) {
@@ -214,4 +227,31 @@ public class ProductController {
                 }
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> searchProducts(@RequestParam("q") String query, Model model){
+
+        List<Product> products = services.searchProduct(query);
+        model.addAttribute("products", products);
+
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/details/{clientId}")
+    public ResponseEntity<List<CarItemDTO>> getShoppingCartDetails(@PathVariable String clientId) {
+        ClientModel client = clientRepository.findById(clientId).orElse(null);
+
+        if (client != null) {
+            ShoppingCar shoppingCar = carService.getShoppingCar(client);
+
+            if (shoppingCar != null) {
+                List<CarItem> carItems = shoppingCar.getCarItems();
+                List<CarItemDTO> carItemDTOList = carService.convertToDTO(carItems);
+                return ResponseEntity.ok(carItemDTOList);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 }
